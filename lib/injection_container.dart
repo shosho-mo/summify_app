@@ -111,7 +111,7 @@ Future<void> init() async {
   // =========================================================================
   sl.registerLazySingleton<ChatRemoteDataSource>(
     () => ChatRemoteDataSourceImpl(
-        const String.fromEnvironment('GROQ_API_KEY')), // حذفنا groqKey =
+        const String.fromEnvironment('MY_GROQ_ID')), // حذفنا groqKey =
   );
 
   // 2. Repository
