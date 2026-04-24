@@ -31,7 +31,7 @@ class BookSearchCubit extends Cubit<BookSearchState> {
               return book.author.toLowerCase().contains(q);
             case 'Category':
               // افترضنا أن الكيان book يحتوي على حقل category أو tags
-              return (book.category ?? '').toLowerCase().contains(q);
+              return (book.category).toLowerCase().contains(q);
             case 'Title':
             default:
               return book.title.toLowerCase().contains(q);
