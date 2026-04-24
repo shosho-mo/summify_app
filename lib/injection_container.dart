@@ -109,11 +109,9 @@ Future<void> init() async {
   // =========================================================================
   // --- Chatbot Feature (Updated to Groq API) ---
   // =========================================================================
-
-  // 1. Data Source
   sl.registerLazySingleton<ChatRemoteDataSource>(
     () => ChatRemoteDataSourceImpl(
-        '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'),
+        const String.fromEnvironment('GROQ_API_KEY')), // حذفنا groqKey =
   );
 
   // 2. Repository
