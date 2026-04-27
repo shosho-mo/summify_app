@@ -2,8 +2,8 @@ name: Flutter Build APK
 
 on:
   push:
-    branches: [ "master" ] # تأكد من اسم الفرع (قد يكون master أو main)
-  workflow_dispatch: # لتشغيل البناء يدوياً
+    branches: [ "main", "master" ] # سيعمل على أي منهما
+  workflow_dispatch: # يتيح لكِ زر "Run workflow" يدوياً
 
 jobs:
   build:
@@ -22,22 +22,20 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.x' # يمكنك تحديد إصدار معين أو تركه ليستخدم الأحدث
+        flutter-version: '3.x'
         channel: 'stable'
         cache: true
 
     - name: Get dependencies
       run: flutter pub get
 
-    # اختيار اختياري: تشغيل الاختبارات للتأكد من سلامة الكود
-    # - name: Run tests
-    #   run: flutter test
-
     - name: Build APK
-      run: flutter build apk --debug # يمكنك تغييرها إلى --release إذا أضفت مفاتيح التوقيع
+      # يفضل استخدام release لتقليل الحجم
+      run: flutter build apk --release --no-codesign
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: flutter-apk
-        path: build/app/outputs/flutter-apk/app-debug.apk
+        name: summify-app-release
+        # لاحظي هنا غيرنا المسار ليتوافق مع الـ release
+        path: build/app/outputs/flutter-apk/app-release.apk
