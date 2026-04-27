@@ -2,7 +2,7 @@ name: Flutter Build APK
 
 on:
   push:
-    branches: [ "main" ] # تأكد من اسم الفرع (قد يكون master أو main)
+    branches: [ "master" ] # تأكد من اسم الفرع (قد يكون master أو main)
   workflow_dispatch: # لتشغيل البناء يدوياً
 
 jobs:
