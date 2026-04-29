@@ -2,8 +2,8 @@ name: Flutter Build APK
 
 on:
   push:
-    branches: [ "main", "master" ] # سيعمل على أي منهما
-  workflow_dispatch: # يتيح لكِ زر "Run workflow" يدوياً
+    branches: [ "main", "master" ] 
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -37,5 +37,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: summify-app-release
-        # لاحظي هنا غيرنا المسار ليتوافق مع الـ release
+     
         path: build/app/outputs/flutter-apk/app-release.apk
