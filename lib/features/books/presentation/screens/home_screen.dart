@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:summify/features/library/presentation/bloc/library_bloc.dart';
 import 'package:summify/features/library/presentation/bloc/library_event.dart';
 import 'package:summify/features/library/presentation/bloc/library_state.dart';
-import '../../../library/Presentation/screens/library_screen.dart';
+import '../../../library/presentation/screens/library_screen.dart';
 import '../../domain/entities/book.dart';
 import '../../domain/entities/category_item.dart';
 import '../bloc/book_bloc.dart';
@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Stack(
           children: [
             // الفقاعات تظل تسبح في الخلفية حتى عند انقطاع الإنترنت
-            const Positioned.fill(
+            Positioned.fill(
               child: FullPageBubbleBackground(
                 numberOfBubbles: 80,
                 maxBubbleSize: 6.0,
