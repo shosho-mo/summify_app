@@ -1,19 +1,15 @@
 import 'dart:isolate';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:summify/injection_container.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:summify/injection_container.dart' as di;
 
 // استيرادات المشروع
-import 'package:summify/injection_container.dart' as di;
-import 'core/utils/constants.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/screens/register_screen.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
@@ -28,10 +24,12 @@ import 'features/profile/presentation/bloc/profile_bloc.dart';
 import 'features/splash/presentation/screens/splash_screen.dart';
 import 'package:summify/features/library/presentation/bloc/library_bloc.dart';
 import 'package:summify/features/library/data/models/library_book_model.dart';
-// 2. أضف هذا السطر
-// 1. أضف هذا السطر
 
-/// دالة الـ Callback الخاصة بالتحميل
+// تعريف المفاتيح في مستوى أعلى (Global) ليقرأها التطبيق أثناء البناء
+const String groqApiKey = String.fromEnvironment('GROQ_API_KEY');
+const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+const String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
 @pragma('vm:entry-point')
 void downloadCallback(String id, int status, int progress) {
   final SendPort? send =
@@ -47,50 +45,38 @@ void main() async {
   }
 
   try {
-    WidgetsFlutterBinding.ensureInitialized();
-    // 1. تحميل الإعدادات من ملف الـ .env
-    await dotenv.load(fileName: '.env');
-
-    // 2. تهيئة Hive لقاعدة البيانات المحلية
+    // 1. تهيئة Hive
     await Hive.initFlutter();
 
-    // 3. تسجيل الـ Adapter الخاص بمكتبة الكتب
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(LibraryBookAdapter());
     }
 
-    // 4. تهيئة سوبابيز (Supabase)
+    // 2. تهيئة سوبابيز باستخدام القيم الممررة من GitHub Actions
     await Supabase.initialize(
-      url: ApiConstants.supabaseUrl,
-      anonKey: ApiConstants.supabaseAnonKey,
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
     );
 
-    // 5. تهيئة محرك التحميل (Flutter Downloader)
+    // 3. تهيئة محرك التحميل
     if (!kIsWeb) {
       await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
       FlutterDownloader.registerCallback(downloadCallback);
     }
 
-    // 6. تهيئة حقن الاعتماديات (Dependency Injection)
+    // 4. تهيئة حقن الاعتماديات
     await di.init();
 
-    // تشغيل التطبيق مع توفير الـ Blocs على مستوى التطبيق بالكامل
     runApp(
       MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => di.sl<AuthBloc>()),
           BlocProvider(
-            create: (_) => di.sl<BookBloc>()..add(FetchAllBooksEvent()),
-          ),
+              create: (_) => di.sl<BookBloc>()..add(FetchAllBooksEvent())),
           BlocProvider(create: (_) => di.sl<BookSearchCubit>()),
           BlocProvider(create: (_) => di.sl<LibraryBloc>()),
-          // تم إضافة ProfileBloc هنا بشكل صحيح ومنظم
           BlocProvider(create: (_) => di.sl<ProfileBloc>()),
-          BlocProvider(
-            create: (context) =>
-                sl<ChatCubit>(), // sl هو الـ Service Locator (GetIt)
-            child: const ChatPage(),
-          ),
+          BlocProvider(create: (_) => di.sl<ChatCubit>()),
         ],
         child: const SummifyApp(),
       ),
