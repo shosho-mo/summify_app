@@ -7,7 +7,7 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// 1. قراءة ملف الخصائص بطريقة Kotlin
+// 1. قراءة ملف الخصائص
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
@@ -28,13 +28,19 @@ android {
         jvmTarget = "17"
     }
 
-    // 2. إعداد التوقيع (لاحظي استخدام الأقواس وعلامات التنصيص المزدوجة "")
+    // 2. إعداد التوقيع الذكي
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String?
+            // محاولة القراءة من النظام أولاً (GitHub Actions)، ثم من الملف المحلي
+            keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProperties.getProperty("keyAlias")
+            keyPassword = System.getenv("KEY_PASSWORD") ?: keystoreProperties.getProperty("keyPassword")
+            storePassword = System.getenv("STORE_PASSWORD") ?: keystoreProperties.getProperty("storePassword")
+            
+            // تحديد مسار الـ Keystore
+            val storeFileProperty = System.getenv("STORE_FILE") ?: keystoreProperties.getProperty("storeFile")
+            if (storeFileProperty != null) {
+                storeFile = file(storeFileProperty)
+            }
         }
     }
 
@@ -48,9 +54,7 @@ android {
 
     buildTypes {
         getByName("release") {
-            // 3. ربط التوقيع
             signingConfig = signingConfigs.getByName("release")
-            
             isMinifyEnabled = false
             isShrinkResources = false
         }
