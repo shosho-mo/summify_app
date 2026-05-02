@@ -25,19 +25,29 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // لون الخلفية الأساسي
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: SingleChildScrollView(
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthSuccess) {
-              print('Login Success: Navigator to Home');
               Navigator.pushReplacementNamed(context, '/home');
             } else if (state is AuthFailure) {
-              print('Login Error: ${state.message}');
+              // عرض رسالة الخطأ بشكل عصري وعائم
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
+                  content: Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.white),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(state.message)),
+                    ],
+                  ),
+                  backgroundColor: Colors.redAccent,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  margin: const EdgeInsets.all(16),
                 ),
               );
             }
@@ -51,7 +61,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+                  colors: [
+                    Color.fromARGB(255, 0, 0, 0),
+                    Color.fromARGB(255, 0, 0, 0)
+                  ],
                 ),
               ),
               child: Column(
@@ -72,16 +85,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 50),
-
-                  // حقل البريد الإلكتروني
                   _buildTextField(
                     controller: _emailController,
                     hint: 'Email Address',
                     icon: Icons.email_outlined,
                   ),
                   const SizedBox(height: 20),
-
-                  // حقل كلمة المرور
                   _buildTextField(
                     controller: _passwordController,
                     hint: 'Password',
@@ -89,8 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     isPassword: true,
                   ),
                   const SizedBox(height: 40),
-
-                  // زر تسجيل الدخول
                   SizedBox(
                     width: double.infinity,
                     height: 55,
@@ -123,9 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
                   Center(
                     child: TextButton(
                       onPressed: () {
@@ -149,7 +154,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // هذه الدالة كانت ناقصة في الكود الخاص بكِ وهي سبب الإيرور
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
