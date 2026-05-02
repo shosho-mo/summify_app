@@ -21,7 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthFailure('فشل تسجيل الدخول، حاول مرة أخرى.'));
         }
       } catch (e) {
-        emit(AuthFailure(e.toString()));
+        emit(AuthFailure(_mapExceptionToMessage(e)));
       }
     });
 
@@ -36,8 +36,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthFailure('فشل إنشاء الحساب.'));
         }
       } catch (e) {
-        emit(AuthFailure(e.toString()));
+        emit(AuthFailure(_mapExceptionToMessage(e)));
       }
     });
+  }
+
+  // دالة خاصة لترجمة الأخطاء التقنية إلى رسائل مفهومة للمستخدم
+  String _mapExceptionToMessage(dynamic e) {
+    String error = e.toString().toLowerCase();
+
+    if (error.contains('user-not-found')) {
+      return 'عذراً، البريد الإلكتروني غير مسجل لدينا.';
+    } else if (error.contains('wrong-password')) {
+      return 'كلمة المرور غير صحيحة.';
+    } else if (error.contains('email-already-in-use')) {
+      return 'هذا البريد الإلكتروني مستخدم بالفعل.';
+    } else if (error.contains('network-request-failed') ||
+        error.contains('socketexception')) {
+      return 'لا يوجد اتصال بالإنترنت، يرجى التحقق من الشبكة.';
+    } else if (error.contains('invalid-email')) {
+      return 'صيغة البريد الإلكتروني غير صحيحة.';
+    }
+
+    // رسالة افتراضية لأي خطأ غير معروف
+    return 'حدث خطأ غير متوقع، يرجى المحاولة لاحقاً.';
   }
 }

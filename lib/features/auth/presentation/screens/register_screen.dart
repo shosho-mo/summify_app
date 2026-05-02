@@ -27,32 +27,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthSuccess) {
-            // عند نجاح إنشاء الحساب، ننتقل للرئيسية
-            Navigator.pushReplacementNamed(context, '/home');
-          } else if (state is AuthFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          return SingleChildScrollView(
-            // لتجنب مشاكل لوحة المفاتيح
-            child: Container(
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+      body: SingleChildScrollView(
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthSuccess) {
+              Navigator.pushReplacementNamed(context, '/home');
+            } else if (state is AuthFailure) {
+              // عرض رسالة الخطأ بشكل عصري وعائم
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.white),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(state.message)),
+                    ],
+                  ),
+                  backgroundColor: Colors.redAccent,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  margin: const EdgeInsets.all(16),
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return Container(
               height: MediaQuery.of(context).size.height,
               padding: const EdgeInsets.all(25),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
-                ),
-              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,14 +76,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 40),
-
                   _buildTextField(
                     controller: _emailController,
                     hint: 'Email Address',
                     icon: Icons.email_outlined,
                   ),
                   const SizedBox(height: 20),
-
                   _buildTextField(
                     controller: _passwordController,
                     hint: 'Password',
@@ -86,7 +89,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     isPassword: true,
                   ),
                   const SizedBox(height: 20),
-
                   _buildTextField(
                     controller: _confirmPasswordController,
                     hint: 'Confirm Password',
@@ -94,8 +96,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     isPassword: true,
                   ),
                   const SizedBox(height: 40),
-
-                  // زر إنشاء الحساب
                   SizedBox(
                     width: double.infinity,
                     height: 55,
@@ -107,14 +107,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   _confirmPasswordController.text) {
                                 context.read<AuthBloc>().add(
                                       RegisterSubmitted(
-                                        _emailController.text,
+                                        _emailController.text.trim(),
                                         _passwordController.text,
                                       ),
                                     );
                               } else {
+                                // عرض خطأ عدم تطابق كلمة المرور بنفس التصميم
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('كلمات المرور غير متطابقة'),
+                                  SnackBar(
+                                    content:
+                                        const Text('كلمات المرور غير متطابقة'),
+                                    backgroundColor: Colors.orangeAccent,
+                                    behavior: SnackBarBehavior.floating,
+                                    margin: const EdgeInsets.all(16),
                                   ),
                                 );
                               }
@@ -130,30 +135,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           : const Text(
                               'Sign Up',
                               style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
                             ),
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // العودة لتسجيل الدخول
                   Center(
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text(
                         'Already have an account? Login',
-                        style: TextStyle(color: Color(0xFFFACC15)),
+                        style: TextStyle(
+                            color: Color(0xFFFACC15),
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

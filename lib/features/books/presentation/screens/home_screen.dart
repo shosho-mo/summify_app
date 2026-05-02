@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Stack(
           children: [
             // الفقاعات تظل تسبح في الخلفية حتى عند انقطاع الإنترنت
-            Positioned.fill(
+            const Positioned.fill(
               child: FullPageBubbleBackground(
                 numberOfBubbles: 80,
                 maxBubbleSize: 6.0,

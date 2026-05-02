@@ -80,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
               const SizedBox(height: 10),
               const Text(
-                'تطبيق Summify هو رفيقك الذكي للقراءة. نسعى لتوفير ملخصات صوتية ومكتوبة لأهم الكتب العالمية، لمساعدتك على التعلم وتطوير ذاتك في وقت أقل بكفاءة وموثوقية عالية.',
+                '  هو رفيقك الذكي للقراءة. نسعى لتوفير ملخصات صوتية ومكتوبة لأهم الكتب العالمية، لمساعدتك على التعلم وتطوير ذاتك في وقت أقل بكفاءة وموثوقية عالية.',
                 textAlign: TextAlign.center,
                 style:
                     TextStyle(color: Colors.white70, fontSize: 15, height: 1.5),
